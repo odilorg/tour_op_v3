@@ -1,61 +1,72 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Tour Operator CRM
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A production-ready Laravel 11 + Filament v4 operations console for tour companies. Operators configure tours, manage bookings, assign suppliers, and track financial performance.
 
-## About Laravel
+## Requirements
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- PHP 8.2+
+- Composer
+- Node.js 18+ (for asset building)
+- SQLite / MySQL / PostgreSQL (default uses SQLite)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+cp .env.example .env
+composer install
+php artisan key:generate
+npm install
+php artisan migrate --seed
+```
 
-## Learning Laravel
+Filament Shield roles and permissions are seeded automatically. Default demo accounts:
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+| Role | Email | Password |
+| --- | --- | --- |
+| Admin | `admin@example.com` | `password` |
+| Manager | `manager@example.com` | `password` |
+| Operator | `operator@example.com` | `password` |
+| Accountant | `accountant@example.com` | `password` |
+| Viewer | `viewer@example.com` | `password` |
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Access the Filament panel at `http://localhost/admin`.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Development
 
-## Laravel Sponsors
+- Run the job worker locally if you plan to queue recompute jobs: `php artisan queue:work`
+- Assets can be compiled with `npm run dev`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Key Features
 
-### Premium Partners
+- Tours composed of ordered days with optional media gallery
+- Bookings generated from tours with automatic day scheduling
+- Supplier catalog with rates, vehicles, and availability protections
+- Assignment management with pricing snapshots, quick rate picker, and progress tracking
+- Financial overview widgets (revenue, costs, margin) and at-risk booking dashboards
+- Activity log for status transitions, notifications on supplier confirmations
+- Role-based access via Filament Shield & spatie/laravel-permission
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## Utilities
 
-## Contributing
+- `php artisan bookings:regenerate-days {booking_id}` re-syncs booking days from the source tour
+- `App\Jobs\RecomputeBookingFinancialsJob` recalculates totals and progress for a booking
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Testing
 
-## Code of Conduct
+Pest is configured by default. Run the full test suite:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+php artisan test
+```
 
-## Security Vulnerabilities
+## Media & Storage
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The application stores uploaded media on the `public` disk by default (`MEDIA_DISK` env variable). Ensure `php artisan storage:link` is executed in non-local environments.
+
+## Activity Logging
+
+Booking status transitions are recorded in `activity_log` and mirrored in the `booking_status_logs` table for quick reference within the Filament panel.
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+MIT
